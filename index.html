@@ -1,4 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ImmunoVasc Lab — Vasculitis & Mucosal Immunology</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:   #0a0f1e;
+      --navy2:  #111827;
+      --navy3:  #1a2540;
+      --amber:  #e8a44a;
+      --amber2: #f5c776;
+      --teal:   #3ecfb2;
+      --white:  #f0ece3;
+      --muted:  #8a93a8;
+      --card:   #131d30;
+      --border: rgba(232,164,74,0.18);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--navy);
+      color: var(--white);
+      overflow-x: hidden;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 4rem;
+      background: rgba(10,15,30,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem; font-weight: 700;
+      color: var(--amber); letter-spacing: 0.04em;
+    }
+    .nav-links { display: flex; gap: 2.4rem; list-style: none; }
+    .nav-links a {
+      text-decoration: none; color: var(--muted);
+      font-size: 0.85rem; font-weight: 500; letter-spacing: 0.06em;
+      text-transform: uppercase; transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--amber); }
+
+    /* ─── HERO ─── */
+    #hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 8rem 4rem 4rem;
+      position: relative; overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 70% 40%, rgba(62,207,178,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 70% at 20% 80%, rgba(232,164,74,0.08) 0%, transparent 55%),
+        linear-gradient(160deg, #0a0f1e 0%, #0d1628 60%, #111827 100%);
+    }
+    /* Decorative vessel lines */
+    .vessel-svg {
+      position: absolute; top: 0; right: 0; width: 55%; height: 100%;
+      opacity: 0.07; z-index: 0; pointer-events: none;
+    }
+    .hero-content { position: relative; z-index: 1; max-width: 780px; }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      font-family: 'DM Mono', monospace; font-size: 0.75rem;
+      color: var(--teal); letter-spacing: 0.12em; text-transform: uppercase;
+      margin-bottom: 1.4rem;
+      opacity: 0; animation: fadeUp 0.7s 0.2s forwards;
+    }
+    .hero-eyebrow::before {
+      content: ''; display: block; width: 28px; height: 1px; background: var(--teal);
+    }
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3rem, 6vw, 5.5rem);
+      font-weight: 900; line-height: 1.05;
+      margin-bottom: 0.3em;
+      opacity: 0; animation: fadeUp 0.8s 0.35s forwards;
+    }
+    .hero-title em { color: var(--amber); font-style: italic; }
+    .hero-subtitle {
+      font-size: 1.15rem; font-weight: 300; color: var(--muted);
+      line-height: 1.7; max-width: 540px; margin-bottom: 2.8rem;
+      opacity: 0; animation: fadeUp 0.8s 0.5s forwards;
+    }
+    .hero-ctas {
+      display: flex; gap: 1rem; flex-wrap: wrap;
+      opacity: 0; animation: fadeUp 0.8s 0.65s forwards;
+    }
+    .btn-primary {
+      padding: 0.85rem 2.2rem; background: var(--amber);
+      color: var(--navy); font-weight: 700; font-size: 0.9rem;
+      letter-spacing: 0.04em; text-decoration: none; border-radius: 3px;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-primary:hover { background: var(--amber2); transform: translateY(-2px); }
+    .btn-secondary {
+      padding: 0.85rem 2.2rem; background: transparent;
+      border: 1px solid var(--border); color: var(--white);
+      font-weight: 400; font-size: 0.9rem; letter-spacing: 0.04em;
+      text-decoration: none; border-radius: 3px; transition: border-color 0.2s, transform 0.15s;
+    }
+    .btn-secondary:hover { border-color: var(--amber); transform: translateY(-2px); }
+    .hero-stats {
+      position: absolute; bottom: 3rem; right: 4rem; z-index: 1;
+      display: flex; gap: 3rem;
+      opacity: 0; animation: fadeUp 0.8s 0.8s forwards;
+    }
+    .stat-item { text-align: right; }
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.4rem; font-weight: 900; color: var(--amber); line-height: 1;
+    }
+    .stat-label { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 0.3rem; }
+
+    /* ─── SECTIONS ─── */
+    section { padding: 7rem 4rem; }
+    .section-tag {
+      font-family: 'DM Mono', monospace; font-size: 0.72rem;
+      color: var(--teal); letter-spacing: 0.14em; text-transform: uppercase;
+      display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1rem;
+    }
+    .section-tag::before { content: ''; display: block; width: 22px; height: 1px; background: var(--teal); }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 3.5vw, 3rem); font-weight: 700;
+      line-height: 1.15; margin-bottom: 3.5rem;
+    }
+    .section-title span { color: var(--amber); font-style: italic; }
+
+    /* ─── RESEARCH ─── */
+    #research { background: var(--navy2); }
+    .research-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1.5px;
+      border: 1.5px solid var(--border); border-radius: 6px; overflow: hidden;
+    }
+    .research-card {
+      background: var(--card); padding: 2.8rem;
+      position: relative; overflow: hidden;
+      transition: background 0.3s;
+    }
+    .research-card:hover { background: #18243e; }
+    .research-card::after {
+      content: ''; position: absolute;
+      bottom: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--amber), var(--teal));
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.4s;
+    }
+    .research-card:hover::after { transform: scaleX(1); }
+    .rc-number {
+      font-family: 'Playfair Display', serif; font-size: 4rem;
+      font-weight: 900; color: rgba(232,164,74,0.12); line-height: 1;
+      position: absolute; top: 1rem; right: 1.8rem;
+    }
+    .rc-icon { font-size: 1.6rem; margin-bottom: 1rem; }
+    .rc-title {
+      font-family: 'Playfair Display', serif; font-size: 1.35rem;
+      font-weight: 700; margin-bottom: 0.9rem;
+    }
+    .rc-desc { color: var(--muted); font-size: 0.92rem; line-height: 1.75; margin-bottom: 1.4rem; }
+    .rc-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .tag {
+      font-family: 'DM Mono', monospace; font-size: 0.7rem;
+      padding: 0.3rem 0.8rem; border: 1px solid var(--border);
+      border-radius: 2px; color: var(--muted); letter-spacing: 0.05em;
+    }
+
+    /* ─── PUBLICATIONS ─── */
+    #publications { background: var(--navy); }
+    .pub-list { display: flex; flex-direction: column; gap: 0; }
+    .pub-item {
+      display: grid; grid-template-columns: 56px 1fr auto;
+      gap: 1.5rem; align-items: start; padding: 2rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      transition: background 0.2s; border-radius: 4px;
+    }
+    .pub-item:hover { background: rgba(232,164,74,0.03); padding-left: 1rem; padding-right: 1rem; }
+    .pub-year {
+      font-family: 'DM Mono', monospace; font-size: 0.78rem;
+      color: var(--amber); padding-top: 0.25rem;
+    }
+    .pub-content {}
+    .pub-title { font-size: 1rem; font-weight: 500; margin-bottom: 0.4rem; line-height: 1.5; }
+    .pub-authors { font-size: 0.82rem; color: var(--muted); margin-bottom: 0.3rem; }
+    .pub-journal {
+      font-style: italic; font-size: 0.82rem;
+      color: var(--teal);
+    }
+    .pub-link {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      font-size: 0.78rem; color: var(--amber); text-decoration: none;
+      white-space: nowrap; padding-top: 0.3rem;
+      transition: opacity 0.2s;
+    }
+    .pub-link:hover { opacity: 0.7; }
+
+    /* ─── TEAM ─── */
+    #team { background: var(--navy2); }
+    .team-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.5rem;
+    }
+    .team-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 6px; padding: 2rem 1.6rem; text-align: center;
+      transition: transform 0.25s, border-color 0.25s;
+    }
+    .team-card:hover { transform: translateY(-6px); border-color: rgba(232,164,74,0.4); }
+    .team-avatar {
+      width: 72px; height: 72px; border-radius: 50%;
+      margin: 0 auto 1.1rem;
+      background: linear-gradient(135deg, var(--navy3) 0%, var(--navy) 100%);
+      border: 2px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700;
+      color: var(--amber);
+    }
+    .team-name { font-weight: 600; font-size: 0.95rem; margin-bottom: 0.3rem; }
+    .team-role { font-size: 0.78rem; color: var(--teal); margin-bottom: 0.6rem; }
+    .team-focus { font-size: 0.78rem; color: var(--muted); line-height: 1.55; }
+
+    /* ─── CONTACT ─── */
+    #contact { background: var(--navy); }
+    .contact-layout { display: grid; grid-template-columns: 1.1fr 1fr; gap: 5rem; align-items: start; }
+    .contact-info {}
+    .contact-info p { color: var(--muted); font-size: 0.95rem; line-height: 1.8; margin-bottom: 2rem; }
+    .contact-details { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2.5rem; }
+    .contact-row {
+      display: flex; align-items: center; gap: 1rem;
+      font-size: 0.88rem;
+    }
+    .contact-row-icon { color: var(--amber); font-size: 1rem; width: 20px; }
+    .contact-row a { color: var(--white); text-decoration: none; }
+    .contact-row a:hover { color: var(--amber); }
+    .join-box {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 6px; padding: 2.5rem;
+    }
+    .join-box h3 {
+      font-family: 'Playfair Display', serif; font-size: 1.4rem;
+      margin-bottom: 0.8rem;
+    }
+    .join-box p { color: var(--muted); font-size: 0.88rem; line-height: 1.75; margin-bottom: 1.8rem; }
+    .positions { display: flex; flex-direction: column; gap: 0.8rem; margin-bottom: 1.8rem; }
+    .position {
+      display: flex; align-items: center; gap: 0.8rem;
+      font-size: 0.85rem; color: var(--white);
+    }
+    .pos-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--teal); flex-shrink: 0; }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: var(--navy2); border-top: 1px solid var(--border);
+      padding: 2rem 4rem; display: flex; justify-content: space-between; align-items: center;
+    }
+    footer p { font-size: 0.8rem; color: var(--muted); }
+    .footer-logo {
+      font-family: 'Playfair Display', serif; font-size: 0.95rem;
+      color: var(--amber); font-weight: 700;
+    }
+
+    /* ─── ANIMATIONS ─── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .reveal {
+      opacity: 0; transform: translateY(28px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 900px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { gap: 1.4rem; }
+      section { padding: 5rem 1.5rem; }
+      #hero { padding: 7rem 1.5rem 3rem; }
+      .hero-stats { position: static; margin-top: 3rem; justify-content: flex-start; }
+      .research-grid { grid-template-columns: 1fr; }
+      .contact-layout { grid-template-columns: 1fr; gap: 2.5rem; }
+      footer { flex-direction: column; gap: 0.8rem; text-align: center; }
+    }
+  </style>
+</head>
 <body>
-<h1>Hello</h1>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">ImmunoVasc Lab</div>
+  <ul class="nav-links">
+    <li><a href="#research">Research</a></li>
+    <li><a href="#publications">Publications</a></li>
+    <li><a href="#team">Team</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <svg class="vessel-svg" viewBox="0 0 600 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M300 0 C300 0 260 80 280 160 C300 240 340 280 320 380 C300 480 240 520 260 620 C280 720 300 800 300 800" stroke="white" stroke-width="2"/>
+    <path d="M300 160 C300 160 360 180 400 240 C440 300 420 360 460 400" stroke="white" stroke-width="1.5"/>
+    <path d="M300 380 C300 380 240 400 200 460 C160 520 180 580 140 620" stroke="white" stroke-width="1.5"/>
+    <path d="M280 300 C280 300 220 310 190 360 C160 410 170 450 140 480" stroke="white" stroke-width="1"/>
+    <path d="M320 420 C320 420 380 430 410 480 C440 530 430 570 460 600" stroke="white" stroke-width="1"/>
+    <circle cx="300" cy="160" r="4" fill="white" opacity="0.5"/>
+    <circle cx="300" cy="380" r="4" fill="white" opacity="0.5"/>
+    <circle cx="300" cy="580" r="3" fill="white" opacity="0.3"/>
+  </svg>
+
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Immunology Research Group</div>
+    <h1 class="hero-title">
+      Decoding <em>Vascular</em><br>& Mucosal Immunity
+    </h1>
+    <p class="hero-subtitle">
+      We investigate the molecular and cellular mechanisms driving vasculitis and mucosal inflammation — bridging basic immunology with translational clinical science.
+    </p>
+    <div class="hero-ctas">
+      <a href="#research" class="btn-primary">Explore Research</a>
+      <a href="#contact" class="btn-secondary">Join the Lab</a>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="stat-item">
+      <div class="stat-num">24+</div>
+      <div class="stat-label">Publications</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">8</div>
+      <div class="stat-label">Lab Members</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">5</div>
+      <div class="stat-label">Active Projects</div>
+    </div>
+  </div>
+</section>
+
+<!-- RESEARCH -->
+<section id="research">
+  <div class="reveal">
+    <div class="section-tag">Our Science</div>
+    <h2 class="section-title">Research <span>Focus Areas</span></h2>
+  </div>
+  <div class="research-grid reveal">
+    <div class="research-card">
+      <div class="rc-number">01</div>
+      <div class="rc-icon">🔬</div>
+      <div class="rc-title">Systemic Vasculitis</div>
+      <p class="rc-desc">
+        Investigating the immunopathogenesis of Kawasaki Disease and Deficiency of Adenosine Deaminase 2 (DADA2). We use Mult-omics techniques to characterize immune infiltrates in vessel walls and identify novel therapeutic targets.
+      </p>
+      <div class="rc-tags">
+        <span class="tag">ANCA-AAV</span>
+        <span class="tag">Giant Cell Arteritis</span>
+        <span class="tag">scRNA-seq</span>
+        <span class="tag">Neutrophil Biology</span>
+      </div>
+    </div>
+    <div class="research-card">
+      <div class="rc-number">02</div>
+      <div class="rc-icon">🧫</div>
+      <div class="rc-title">Mucosal Immunology</div>
+      <p class="rc-desc">
+        Studying barrier immunity at gut and airway mucosa, focusing on ILC subsets, tissue-resident memory T cells, and the microbiome–immune axis in inflammatory disease. We integrate multi-omics with clinical biopsy cohorts.
+      </p>
+      <div class="rc-tags">
+        <span class="tag">ILC Biology</span>
+        <span class="tag">Trm Cells</span>
+        <span class="tag">Gut-Vessel Axis</span>
+        <span class="tag">Microbiome</span>
+      </div>
+    </div>
+    <div class="research-card">
+      <div class="rc-number">03</div>
+      <div class="rc-icon">💊</div>
+      <div class="rc-title">Translational Biomarkers</div>
+      <p class="rc-desc">
+        Developing blood and tissue biomarkers for disease activity and treatment response in systemic vasculitis. Leveraging mass cytometry, Olink proteomics, and machine learning for clinical decision support tools.
+      </p>
+      <div class="rc-tags">
+        <span class="tag">CyTOF</span>
+        <span class="tag">Olink</span>
+        <span class="tag">Biomarker Discovery</span>
+        <span class="tag">ML Models</span>
+      </div>
+    </div>
+    <div class="research-card">
+      <div class="rc-number">04</div>
+      <div class="rc-icon">🧬</div>
+      <div class="rc-title">Bioinformatics & Multi-omics</div>
+      <p class="rc-desc">
+        Building computational pipelines for integrative analysis of transcriptomic, proteomic, and epigenomic datasets. Open-source tools for the wider immunology community, with a focus on reproducible research.
+      </p>
+      <div class="rc-tags">
+        <span class="tag">Seurat / Scanpy</span>
+        <span class="tag">CITE-seq</span>
+        <span class="tag">Epigenomics</span>
+        <span class="tag">R / Python</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PUBLICATIONS -->
+<section id="publications">
+  <div class="reveal">
+    <div class="section-tag">Selected Work</div>
+    <h2 class="section-title">Recent <span>Publications</span></h2>
+  </div>
+  <div class="pub-list reveal">
+    <div class="pub-item">
+      <div class="pub-year">2024</div>
+      <div class="pub-content">
+        <div class="pub-title">Single-cell landscape of vascular inflammation in ANCA-associated vasculitis reveals pathogenic neutrophil states</div>
+        <div class="pub-authors">Your Name, Co-Author A, Co-Author B, et al.</div>
+        <div class="pub-journal">Nature Immunology</div>
+      </div>
+      <a href="#" class="pub-link">DOI ↗</a>
+    </div>
+    <div class="pub-item">
+      <div class="pub-year">2024</div>
+      <div class="pub-content">
+        <div class="pub-title">Mucosal ILC3s drive vascular inflammation through IL-17 signalling at the gut-vessel axis</div>
+        <div class="pub-authors">Co-Author A, Your Name, Co-Author C, et al.</div>
+        <div class="pub-journal">Journal of Experimental Medicine</div>
+      </div>
+      <a href="#" class="pub-link">DOI ↗</a>
+    </div>
+    <div class="pub-item">
+      <div class="pub-year">2023</div>
+      <div class="pub-content">
+        <div class="pub-title">Plasma proteomic signatures predict relapse in giant cell arteritis: a multi-centre cohort study</div>
+        <div class="pub-authors">Your Name, Co-Author D, Co-Author E, et al.</div>
+        <div class="pub-journal">Annals of the Rheumatic Diseases</div>
+      </div>
+      <a href="#" class="pub-link">DOI ↗</a>
+    </div>
+    <div class="pub-item">
+      <div class="pub-year">2023</div>
+      <div class="pub-content">
+        <div class="pub-title">Tissue-resident memory T cells in mucosal immunity: implications for inflammatory bowel disease</div>
+        <div class="pub-authors">Co-Author B, Your Name, Co-Author F, et al.</div>
+        <div class="pub-journal">Immunity</div>
+      </div>
+      <a href="#" class="pub-link">DOI ↗</a>
+    </div>
+    <div class="pub-item">
+      <div class="pub-year">2022</div>
+      <div class="pub-content">
+        <div class="pub-title">Multi-omics integration reveals microbiome-driven immune dysregulation in AAV-related renal injury</div>
+        <div class="pub-authors">Your Name, Co-Author G, et al.</div>
+        <div class="pub-journal">Cell Reports Medicine</div>
+      </div>
+      <a href="#" class="pub-link">DOI ↗</a>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section id="team">
+  <div class="reveal">
+    <div class="section-tag">The People</div>
+    <h2 class="section-title">Meet the <span>Team</span></h2>
+  </div>
+  <div class="team-grid reveal">
+    <div class="team-card">
+      <div class="team-avatar">PI</div>
+      <div class="team-name">Dr. Jayakanthan K </div>
+      <div class="team-role">Principal Investigator</div>
+      <div class="team-focus">Vasculitis · Mucosal Immunology · Translational Research</div>
+    </div>
+    <div class="team-card">
+      <div class="team-avatar">SR</div>
+      <div class="team-name">Dr. [Name]</div>
+      <div class="team-role">Senior Research Fellow</div>
+      <div class="team-focus">Single-cell transcriptomics · ANCA-AAV pathogenesis</div>
+    </div>
+    <div class="team-card">
+      <div class="team-avatar">PD</div>
+      <div class="team-name">Dr. [Name]</div>
+      <div class="team-role">Postdoctoral Researcher</div>
+      <div class="team-focus">Mucosal ILC biology · Barrier immunity</div>
+    </div>
+    <div class="team-card">
+      <div class="team-avatar">PD</div>
+      <div class="team-name">Dr. [Name]</div>
+      <div class="team-role">Postdoctoral Researcher</div>
+      <div class="team-focus">Biomarker development · Mass cytometry</div>
+    </div>
+    <div class="team-card">
+      <div class="team-avatar">GS</div>
+      <div class="team-name">[Name]</div>
+      <div class="team-role">PhD Student</div>
+      <div class="team-focus">Epigenomics · T cell differentiation in vasculitis</div>
+    </div>
+    <div class="team-card">
+      <div class="team-avatar">GS</div>
+      <div class="team-name">[Name]</div>
+      <div class="team-role">PhD Student</div>
+      <div class="team-focus">Gut microbiome · Mucosal-vascular crosstalk</div>
+    </div>
+    <div class="team-card">
+      <div class="team-avatar">BI</div>
+      <div class="team-name">[Name]</div>
+      <div class="team-role">Bioinformatician</div>
+      <div class="team-focus">Multi-omics pipelines · R/Python · Spatial transcriptomics</div>
+    </div>
+    <div class="team-card">
+      <div class="team-avatar">RA</div>
+      <div class="team-name">[Name]</div>
+      <div class="team-role">Research Associate</div>
+      <div class="team-focus">Flow cytometry · Cell culture · Organoid models</div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-layout">
+    <div class="contact-info reveal">
+      <div class="section-tag">Get in Touch</div>
+      <h2 class="section-title">Contact <span>&amp; Join</span></h2>
+      <p>
+        We welcome collaborations, clinical partnerships, and exceptional researchers at all career stages who share a passion for understanding immune-mediated disease.
+      </p>
+      <div class="contact-details">
+        <div class="contact-row">
+          <span class="contact-row-icon">📍</span>
+          <span>Department of Pediatric Medicine, Advanced Pediatric Center, Postgraduate Institute of Medical Education and Research (PGIMER), Chandigarh, India </span>
+        </div>
+        <div class="contact-row">
+          <span class="contact-row-icon">✉️</span>
+          <a href="mailto:k.jayakanthan@pgimer.edu.in">k.jayakanthan@pgimer.edu.in</a>
+        </div>
+        <div class="contact-row">
+          <span class="contact-row-icon">🔗</span>
+          <a href="#">https://pubmed.ncbi.nlm.nih.gov/?term=Kabeerdoss+J&sort=date&size=200/ https://scholar.google.com/citations?user=ntJSNTAAAAAJ&hl=en</a>
+        </div>
+        <div class="contact-row">
+          <span class="contact-row-icon">💻</span>
+          <a href="#">GitHub — Lab Pipelines</a>
+        </div>
+      </div>
+      <a href="mailto:k.jayakanthan@pgimer.edu.in" class="btn-primary">Send a Message</a>
+    </div>
+
+    <div class="join-box reveal">
+      <h3>Open Positions</h3>
+      <p>We are actively recruiting motivated individuals. Funded positions and fellowship support are available for the right candidates.</p>
+      <div class="positions">
+        <div class="position"><span class="pos-dot"></span> Postdoctoral Fellow — Mucosal Immunology (2025)</div>
+        <div class="position"><span class="pos-dot"></span> PhD Studentship — Vasculitis Bioinformatics (2025)</div>
+        <div class="position"><span class="pos-dot"></span> Clinical Research Fellow (rotating, year-round)</div>
+        <div class="position"><span class="pos-dot"></span> Visiting Researcher / Sabbatical positions</div>
+      </div>
+      <p style="font-size:0.82rem;">
+        Please send a CV, brief research statement, and contact details for two referees to the email above. Informal enquiries are very welcome.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">ImmunoVasc Lab</div>
+  <p>© 2025 [Your Lab Name] · [University] · All rights reserved</p>
+  <p style="font-size:0.75rem; color: #555e75;">Funded by [Grant Bodies]</p>
+</footer>
+
+<script>
+  // Intersection Observer for scroll reveals
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 80);
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => observer.observe(el));
+
+  // Stagger child reveals in grids
+  document.querySelectorAll('.research-grid, .team-grid').forEach(grid => {
+    grid.querySelectorAll('.research-card, .team-card').forEach((card, i) => {
+      card.style.transitionDelay = `${i * 60}ms`;
+    });
+  });
+</script>
 </body>
 </html>
