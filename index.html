@@ -125,6 +125,31 @@
     }
     .stat-label { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 0.3rem; }
 
+
+/* ─── HERO IMAGE PLACEHOLDER ─── */
+/* ─── HERO IMAGE PLACEHOLDER ─── */
+.hero-media {
+  position: absolute; right: 4rem; bottom: 10.5rem; z-index: 1;
+  width: clamp(220px, 28vw, 400px);
+  min-height: 200px;                     
+  border-radius: 8px; overflow: hidden;
+  background: linear-gradient(135deg, var(--navy3) 0%, var(--navy2) 100%);
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 2px rgba(31,42,68,0.06), 0 8px 20px rgba(31,42,68,0.05);
+  opacity: 0; animation: fadeUp 0.8s 0.7s forwards;
+}
+.hero-media img {
+  display: block; width: 100%; height: auto;   
+  position: relative; z-index: 1;             
+}
+.hero-media .photo-placeholder { margin: 0.8rem; }
+
+@media (max-width: 900px) {
+  .hero-media {
+    position: relative; right: auto; bottom: auto;
+    width: 100%; max-width: 500px; margin-top: 2.5rem;
+  }
+}
     /* ─── SECTIONS ─── */
     section { padding: 7rem 4rem; }
     .section-tag {
@@ -559,6 +584,18 @@ width:250px;          /* added: set card height */
   </div>
 </section>
 
+
+<div class="hero-media">
+  <div class="photo-placeholder">
+    <span style="font-size:1.8rem;">🖼️</span>
+    <span>Hero image</span>
+    <small>homepage.jpg</small>
+  </div>
+  <img src="homepage.png" alt="ImmunoVasc Lab" onerror="this.style.display='none'" />
+</div>
+
+
+
 <!-- RESEARCH -->
 <section id="research">
   <div class="reveal">
@@ -874,9 +911,7 @@ AMR Prediction</b>
         <P></P><b>Current - Transcriptome and epigenomic
 landscapes of CD4 T cells and B cells in children with Deficiency of adenosine deaminase 2 (DADA2)</b>
         <div class="modal-links">
-          <a href="#">Google Scholar ↗</a>
-          <a href="#">LinkedIn ↗</a>
-          <a href="#">Email</a>
+
         </div>
       </div>
     </div>
